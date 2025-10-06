@@ -12,47 +12,45 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing or invalid URL parameter' });
   }
 
+  console.log(`Proxy request for: ${url}`);
+
   try {
-    // Validate URL to prevent SSRF attacks
+    // Basic URL validation (less restrictive)
     const urlObj = new URL(url);
-    const allowedDomains = [
-      'ipfs.io',
-      'gateway.pinata.cloud',
-      'cloudflare-ipfs.com',
-      'nftstorage.link',
-      'dweb.link',
-      'ipfs.infura.io',
-      'arweave.net',
-      'gateway.ipfs.io',
-      '4everland.io',
-      'w3s.link',
-      'fleek.co',
-      'web3.storage'
-    ];
 
-    const isAllowedDomain = allowedDomains.some(domain =>
-      urlObj.hostname.endsWith(domain) || urlObj.hostname === domain
-    );
-
-    if (!isAllowedDomain) {
-      console.log(`Blocked domain: ${urlObj.hostname} for URL: ${url}`);
-      return res.status(403).json({ error: 'Domain not allowed' });
+    // Only allow HTTP/HTTPS protocols
+    if (!['http:', 'https:'].includes(urlObj.protocol)) {
+      return res.status(403).json({ error: 'Invalid protocol' });
     }
+
+    // Block private/localhost IPs for security
+    const hostname = urlObj.hostname.toLowerCase();
+    if (hostname.includes('localhost') ||
+        hostname.includes('127.0.0.1') ||
+        hostname.includes('10.') ||
+        hostname.includes('192.168.') ||
+        hostname.includes('172.')) {
+      return res.status(403).json({ error: 'Local/private IPs not allowed' });
+    }
+
+    console.log(`Fetching from: ${url}`);
 
     // Fetch the image with timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
 
     const response = await fetch(url, {
       signal: controller.signal,
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; NODES-NFT-Collage-Maker/1.0)',
+        'Accept': 'image/*,*/*',
       },
     });
 
     clearTimeout(timeoutId);
 
     if (!response.ok) {
+      console.error(`Fetch failed: ${response.status} ${response.statusText}`);
       return res.status(response.status).json({ error: 'Failed to fetch image' });
     }
 

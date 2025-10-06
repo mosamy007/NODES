@@ -162,16 +162,27 @@ function createNFTElement(nft, index) {
         if (nft.image.startsWith('data:') || nft.image.startsWith('/') || nft.image.startsWith(window.location.origin)) {
             img.src = nft.image;
         } else {
+            // Try proxy first, fallback to direct load
             img.src = `/proxy/${encodeURIComponent(nft.image)}`;
+
+            // Add error handler that tries direct load as fallback
+            img.onerror = function() {
+                console.log(`Proxy failed for ${nft.image}, trying direct load`);
+                // Try loading directly (might work for some CORS policies)
+                const directImg = new Image();
+                directImg.onload = () => {
+                    img.src = nft.image;
+                };
+                directImg.onerror = () => {
+                    // Show error placeholder
+                    this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmM2YzIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OTk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkVycm9yPC90ZXh0Pjwvc3ZnPg==';
+                };
+                directImg.src = nft.image;
+            };
         }
     } else {
         img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmM2YzIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OTk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==';
     }
-    
-    img.alt = nft.name;
-    img.onerror = function() {
-        this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmM2YzIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OTk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkVycm9yPC90ZXh0Pjwvc3ZnPg==';
-    };
     
     const infoDiv = document.createElement('div');
     infoDiv.className = 'nft-info';
@@ -274,7 +285,23 @@ function generateCollageLayout() {
                     if (nft.image.startsWith('data:') || nft.image.startsWith('/') || nft.image.startsWith(window.location.origin)) {
                         img.src = nft.image;
                     } else {
+                        // Try proxy first, fallback to direct load
                         img.src = `/proxy/${encodeURIComponent(nft.image)}`;
+
+                        // Add error handler that tries direct load as fallback
+                        img.onerror = function() {
+                            console.log(`Collage proxy failed for ${nft.image}, trying direct load`);
+                            // Try loading directly (might work for some CORS policies)
+                            const directImg = new Image();
+                            directImg.onload = () => {
+                                img.src = nft.image;
+                            };
+                            directImg.onerror = () => {
+                                // Show error placeholder - will be handled by canvas drawing
+                                img.style.display = 'none';
+                            };
+                            directImg.src = nft.image;
+                        };
                     }
                 } else {
                     img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmM2YzIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OTk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==';
@@ -319,7 +346,23 @@ function updateSelectedNFTsDisplay() {
             if (nft.image.startsWith('data:') || nft.image.startsWith('/') || nft.image.startsWith(window.location.origin)) {
                 img.src = nft.image;
             } else {
+                // Try proxy first, fallback to direct load
                 img.src = `/proxy/${encodeURIComponent(nft.image)}`;
+
+                // Add error handler that tries direct load as fallback
+                img.onerror = function() {
+                    console.log(`Selected NFT proxy failed for ${nft.image}, trying direct load`);
+                    // Try loading directly (might work for some CORS policies)
+                    const directImg = new Image();
+                    directImg.onload = () => {
+                        img.src = nft.image;
+                    };
+                    directImg.onerror = () => {
+                        // Show error placeholder
+                        this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmM2YzIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OTk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkVycm9yPC90ZXh0Pjwvc3ZnPg==';
+                    };
+                    directImg.src = nft.image;
+                };
             }
         } else {
             img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmM2YzIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OTk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==';
