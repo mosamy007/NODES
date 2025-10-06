@@ -4,26 +4,30 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Get the URL from the query parameter
-  const { url } = req.query;
+  // Get the URL from the path parameter (not query parameter)
+  const pathUrl = req.url.replace('/proxy/', '');
+  const url = decodeURIComponent(pathUrl);
 
   if (!url || typeof url !== 'string') {
     return res.status(400).json({ error: 'Missing or invalid URL parameter' });
   }
 
   try {
-    // Decode the URL
-    const decodedUrl = decodeURIComponent(url);
-
     // Validate URL to prevent SSRF attacks
-    const urlObj = new URL(decodedUrl);
+    const urlObj = new URL(url);
     const allowedDomains = [
       'ipfs.io',
       'gateway.pinata.cloud',
       'cloudflare-ipfs.com',
       'nftstorage.link',
       'dweb.link',
-      'ipfs.infura.io'
+      'ipfs.infura.io',
+      'arweave.net',
+      'gateway.ipfs.io',
+      '4everland.io',
+      'w3s.link',
+      'fleek.co',
+      'web3.storage'
     ];
 
     const isAllowedDomain = allowedDomains.some(domain =>
@@ -31,6 +35,7 @@ export default async function handler(req, res) {
     );
 
     if (!isAllowedDomain) {
+      console.log(`Blocked domain: ${urlObj.hostname} for URL: ${url}`);
       return res.status(403).json({ error: 'Domain not allowed' });
     }
 
@@ -38,7 +43,7 @@ export default async function handler(req, res) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-    const response = await fetch(decodedUrl, {
+    const response = await fetch(url, {
       signal: controller.signal,
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; NODES-NFT-Collage-Maker/1.0)',
