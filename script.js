@@ -619,13 +619,22 @@ async function drawNFTImage(ctx, nft, x, y, size) {
     return new Promise((resolve, reject) => {
         try {
             const img = new Image();
-            
+
             img.onload = function() {
                 try {
                     // Ensure image is fully loaded and accessible
-                    if (img.complete && img.naturalWidth > 0) {
-                        // Draw image with proper scaling
-                        ctx.drawImage(img, x, y, size, size);
+                    if (img.complete && img.naturalWidth > 0 && img.naturalHeight > 0) {
+                        // Create a new canvas to ensure image data is accessible
+                        const tempCanvas = document.createElement('canvas');
+                        tempCanvas.width = img.naturalWidth;
+                        tempCanvas.height = img.naturalHeight;
+                        const tempCtx = tempCanvas.getContext('2d');
+
+                        // Draw the image to the temp canvas to ensure it's accessible
+                        tempCtx.drawImage(img, 0, 0);
+
+                        // Now draw from the temp canvas to our target canvas
+                        ctx.drawImage(tempCanvas, x, y, size, size);
                         console.log(`Successfully drew NFT image: ${nft.name}`);
                         resolve();
                     } else {
@@ -634,18 +643,18 @@ async function drawNFTImage(ctx, nft, x, y, size) {
                         resolve();
                     }
                 } catch (error) {
-                    console.error('Error drawing image:', error);
+                    console.error('Error drawing image to canvas:', error);
                     drawPlaceholder(ctx, x, y, size, nft.name);
                     resolve();
                 }
             };
-            
+
             img.onerror = function() {
                 console.warn(`Failed to load image for NFT: ${nft.name}, URL: ${nft.image}`);
                 drawPlaceholder(ctx, x, y, size, nft.name);
                 resolve();
             };
-            
+
             // Set timeout to prevent hanging
             setTimeout(() => {
                 if (!img.complete) {
@@ -654,9 +663,9 @@ async function drawNFTImage(ctx, nft, x, y, size) {
                     resolve();
                 }
             }, 8000); // Increased timeout for proxy
-            
+
             console.log(`Loading image for NFT: ${nft.name}, URL: ${nft.image}`);
-            
+
             // Use proxy to avoid CORS issues
             if (nft.image) {
                 // Check if it's already a data URL or local
@@ -666,6 +675,7 @@ async function drawNFTImage(ctx, nft, x, y, size) {
                     // Use proxy for external images
                     const proxyUrl = `/proxy/${encodeURIComponent(nft.image)}`;
                     console.log(`Using proxy URL: ${proxyUrl}`);
+                    img.crossOrigin = 'anonymous'; // Enable CORS for canvas access
                     img.src = proxyUrl;
                 }
             } else {
@@ -673,7 +683,7 @@ async function drawNFTImage(ctx, nft, x, y, size) {
                 drawPlaceholder(ctx, x, y, size, nft.name);
                 resolve();
             }
-            
+
         } catch (error) {
             console.error('Error in drawNFTImage:', error);
             drawPlaceholder(ctx, x, y, size, nft.name);
@@ -690,9 +700,18 @@ async function drawNFTImageHD(ctx, nft, x, y, size) {
             img.onload = function() {
                 try {
                     // Ensure image is fully loaded and accessible
-                    if (img.complete && img.naturalWidth > 0) {
-                        // Draw image with high-quality scaling
-                        ctx.drawImage(img, x, y, size, size);
+                    if (img.complete && img.naturalWidth > 0 && img.naturalHeight > 0) {
+                        // Create a new canvas to ensure image data is accessible
+                        const tempCanvas = document.createElement('canvas');
+                        tempCanvas.width = img.naturalWidth;
+                        tempCanvas.height = img.naturalHeight;
+                        const tempCtx = tempCanvas.getContext('2d');
+
+                        // Draw the image to the temp canvas to ensure it's accessible
+                        tempCtx.drawImage(img, 0, 0);
+
+                        // Now draw from the temp canvas to our target canvas
+                        ctx.drawImage(tempCanvas, x, y, size, size);
                         console.log(`Successfully drew HD NFT image: ${nft.name}`);
                         resolve();
                     } else {
@@ -701,7 +720,7 @@ async function drawNFTImageHD(ctx, nft, x, y, size) {
                         resolve();
                     }
                 } catch (error) {
-                    console.error('Error drawing HD image:', error);
+                    console.error('Error drawing HD image to canvas:', error);
                     drawPlaceholderHD(ctx, x, y, size, nft.name);
                     resolve();
                 }
@@ -731,6 +750,7 @@ async function drawNFTImageHD(ctx, nft, x, y, size) {
                 } else {
                     const proxyUrl = `/proxy/${encodeURIComponent(nft.image)}`;
                     console.log(`Using proxy URL for HD: ${proxyUrl}`);
+                    img.crossOrigin = 'anonymous'; // Enable CORS for canvas access
                     img.src = proxyUrl;
                 }
             } else {
