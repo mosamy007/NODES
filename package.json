@@ -4,7 +4,7 @@
   "description": "A web tool to create collages from NODES NFT collection",
   "scripts": {
     "dev": "vercel dev",
-    "build": "echo 'Static site - no build required'",
+    "build": "echo 'Static site with API routes - no build required'",
     "start": "vercel dev"
   },
   "keywords": ["nft", "collage", "nodes", "base", "blockchain", "vercel"],
