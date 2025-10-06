@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NODES NFT Collage Maker</title>
+    <link rel="preload" href="font.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="stylesheet" href="styles.css?v=3">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>NODES NFT Collage Maker</h1>
+            <p>Create stunning collages from your NODES NFT collection</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Wallet Input Section -->
+            <div class="section wallet-section">
+                <h2>Enter Your Wallet Address</h2>
+                <div class="input-group">
+                    <input type="text" id="walletAddress" placeholder="0x..." class="wallet-input">
+                    <button id="fetchNFTs" class="btn btn-primary">Fetch NFTs</button>
+                </div>
+                <div id="loading" class="loading hidden">
+                    <div class="spinner"></div>
+                    <p>Fetching your NODES NFTs...</p>
+                </div>
+            </div>
+
+            <!-- NFT Selection Section -->
+            <div class="section nft-selection hidden" id="nftSelection">
+                <h2>Select NFTs (2-8)</h2>
+                <div class="nft-grid" id="nftGrid">
+                    <!-- NFTs will be populated here -->
+                </div>
+                <div class="selection-info">
+                    <span id="selectionCount">0 NFTs selected</span>
+                    <button id="proceedToCollage" class="btn btn-secondary" disabled>Create Collage</button>
+                </div>
+            </div>
+
+            <!-- Collage Creation Section -->
+            <div class="section collage-section hidden" id="collageSection">
+                <h2>Arrange Your Collage</h2>
+                <div class="collage-preview">
+                    <div class="collage-grid" id="collageGrid">
+                        <!-- Collage layout will be generated here -->
+                    </div>
+                </div>
+                <div class="collage-controls">
+                    <div class="selected-nfts" id="selectedNFTs">
+                        <!-- Selected NFTs for reordering -->
+                    </div>
+                    <div class="export-controls">
+                        <button id="generateCollage" class="btn btn-primary">Generate Collage</button>
+                        <div class="export-options">
+                            <button id="downloadPNG" class="btn btn-success">Download PNG</button>
+                            <button id="downloadGIF" class="btn btn-success">Download GIF</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Messages -->
+            <div id="errorMessage" class="error-message hidden"></div>
+        </div>
+    </div>
+
+    <!-- GIF creation and parsing libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/gif.js@0.2.0/dist/gif.js"></script>
+    <script src="https://unpkg.com/omggif@1.0.10/omggif.js"></script>
+    
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

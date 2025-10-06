@@ -1,0 +1,17 @@
+{
+  "name": "nodes-nft-collage-maker",
+  "version": "1.0.0",
+  "description": "A web tool to create collages from NODES NFT collection",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Static site - no build required'",
+    "start": "vercel dev"
+  },
+  "keywords": ["nft", "collage", "nodes", "base", "blockchain", "vercel"],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "vercel": "^32.0.0"
+  }
+}
