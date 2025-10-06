@@ -61,7 +61,11 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Cache-Control', 'public, max-age=3600');
+
+    // Additional headers for canvas compatibility
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
 
     // Set content type
     res.setHeader('Content-Type', contentType);

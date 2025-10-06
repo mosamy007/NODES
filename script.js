@@ -622,10 +622,17 @@ async function drawNFTImage(ctx, nft, x, y, size) {
             
             img.onload = function() {
                 try {
-                    // Draw image with proper scaling
-                    ctx.drawImage(img, x, y, size, size);
-                    console.log(`Successfully drew NFT image: ${nft.name}`);
-                    resolve();
+                    // Ensure image is fully loaded and accessible
+                    if (img.complete && img.naturalWidth > 0) {
+                        // Draw image with proper scaling
+                        ctx.drawImage(img, x, y, size, size);
+                        console.log(`Successfully drew NFT image: ${nft.name}`);
+                        resolve();
+                    } else {
+                        console.warn(`Image not fully loaded for NFT: ${nft.name}`);
+                        drawPlaceholder(ctx, x, y, size, nft.name);
+                        resolve();
+                    }
                 } catch (error) {
                     console.error('Error drawing image:', error);
                     drawPlaceholder(ctx, x, y, size, nft.name);
@@ -682,10 +689,17 @@ async function drawNFTImageHD(ctx, nft, x, y, size) {
             
             img.onload = function() {
                 try {
-                    // Draw image with high-quality scaling
-                    ctx.drawImage(img, x, y, size, size);
-                    console.log(`Successfully drew HD NFT image: ${nft.name}`);
-                    resolve();
+                    // Ensure image is fully loaded and accessible
+                    if (img.complete && img.naturalWidth > 0) {
+                        // Draw image with high-quality scaling
+                        ctx.drawImage(img, x, y, size, size);
+                        console.log(`Successfully drew HD NFT image: ${nft.name}`);
+                        resolve();
+                    } else {
+                        console.warn(`HD Image not fully loaded for NFT: ${nft.name}`);
+                        drawPlaceholderHD(ctx, x, y, size, nft.name);
+                        resolve();
+                    }
                 } catch (error) {
                     console.error('Error drawing HD image:', error);
                     drawPlaceholderHD(ctx, x, y, size, nft.name);
